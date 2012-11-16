@@ -1,7 +1,7 @@
-prof_app
+Profiler application
 ========
 
-Web application wich handles profiling processes + Own XHProf GUI + Standart XHProf GUI
+Web application which handles profiling processes + Own XHProf GUI + Standart XHProf GUI
 
 What need to do:
 
