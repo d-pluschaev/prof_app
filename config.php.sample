@@ -1,0 +1,50 @@
+<?php
+
+$config = array(
+    // auth
+    'auth_file' => "{$root}auth.txt",
+    // app
+    'default_controller' => 'default',
+    'default_action' => 'index',
+
+    'route_type' => 'short', // like "index&controller&action?id=2"
+    // 'request'   // like "index.php?controller=controller&action=action&id=2"
+
+    // access for specific role to "controller:action"; * - any
+    'routes' => array(
+        'guest' => array(
+            'default:*',
+            'login:*',
+
+            // remove to deny unauthorized access to controllers
+            'analyze:*',
+            'collect:*',
+            'settings:*',
+
+        ),
+        'user' => array(
+            '*:*',
+        ),
+        'admin' => array(
+            '*:*',
+        ),
+    ),
+
+    'maintaining_project_url' => "{$config['maintaining_application_url']}",
+    'maintaining_project_web_dir' => $config['maintaining_application_web_dir'], // no slash at the end
+    'maintaining_project_htaccess_file' => "{$config['maintaining_application_web_dir']}/.htaccess",
+
+    'path_request_logs' => "{$root}data/request_logs/",
+    'path_request_results' => "{$root}data/request_results/",
+    'path_dynamic_config' => "{$root}config_dynamic.srz",
+
+    'path_sc_auto_prepend_file' => "{$root}data/maintain_agent_files/auto_prepend.php",
+    'path_sc_auto_prepend_config_file' => "{$root}data/maintain_agent_files/auto_prepend_conf.srz",
+
+    'debug_agent_uid' => '3a6f28f4f9337f77192bc78ae9aca1a3',
+
+    'xhp_legacy_files_location' => "{$root}data/legacy_profiler_files", // no slash at the end
+    'xhp_legacy_composite_link' => "legacy/?run=%s&source=xhp",
+);
+
+

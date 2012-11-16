@@ -1,0 +1,496 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+html, body, #container {
+    height: 100%;
+}
+
+body > #container {
+    height: auto;
+    min-height: 100%;
+}
+
+#footer {
+    clear: both;
+    position: relative;
+    z-index: 10;
+    height: 20px;
+    margin-top: -20px;
+    text-align: center;
+    color: #777;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* TABS */
+#wrap {
+    position: relative;
+    width: 100%;
+}
+
+#content {
+    background: none repeat scroll 0 0 #FFFFFF;
+    overflow: hidden;
+    padding: 20px;
+}
+
+#content .tabs {
+    font-size: 0.75em;
+    height: 30px;
+    line-height: 30px;
+    list-style: none outside none;
+    overflow: hidden;
+}
+
+#content .tabs li {
+    float: left;
+}
+
+#content .tabs a {
+    background: none repeat scroll 0 0 #EEEEEE;
+    float: left;
+    height: 30px;
+    padding: 0 15px;
+    text-decoration: none;
+    color: #000;
+}
+
+#content .tabs a.active {
+    background-color: #999999;
+}
+
+#content .tabs a:focus {
+    outline: none;
+    background-color: #999;
+}
+
+#content .tabs a:hover {
+    background: none repeat scroll 0 0 #777;
+}
+
+#content .tabs-content {
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+#content .tabs-content ul {
+}
+
+#content .tabs-content ul li {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+}
+
+/* END TABS */
+
+.title_line {
+}
+
+.title_line .seq_ctrl {
+    margin-right: 30px;
+    float: right;
+}
+
+.title_line a:first-child,
+.title_line span:first-child.inactive {
+    margin-right: 10px;
+}
+
+.title_line a:last-child,
+.title_line span:last-child.inactive {
+    margin-left: 10px;
+}
+
+.title_line span .inactive {
+    color: #ccc;
+}
+
+/* MENU */
+.top_menu {
+    background-color: #EEEEEE;
+    padding: 0 20px;
+    border-bottom: solid 1px #CCC;
+    right: 0;
+    position: absolute;
+}
+
+.top_menu ul {
+    font-size: 0.75em;
+    height: 30px;
+    line-height: 30px;
+    list-style: none outside none;
+    overflow: hidden;
+    float: right;
+}
+
+.top_menu ul li {
+    float: left;
+}
+
+.top_menu ul li a.active {
+    background-color: #999999;
+}
+
+.top_menu ul a {
+    background: none repeat scroll 0 0 #EEEEEE;
+    float: left;
+    height: 30px;
+    padding: 0 15px;
+    text-decoration: none;
+    color: #000;
+    border-left: 1px solid #ccc;
+}
+
+.top_menu ul a:focus {
+    outline: none;
+    background-color: #999;
+}
+
+.top_menu ul a:hover {
+    background: none repeat scroll 0 0 #777;
+}
+
+/* END MENU */
+
+.breadcrumb {
+    background-color: #EEEEEE;
+    border-bottom: 1px solid #CCCCCC;
+    color: #777777;
+    font-weight: bold;
+    padding: 0 20px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.tbl_list {
+
+}
+
+.tbl_list {
+    border: 1px solid #999;
+    font-size: 80%;
+    width: 100%;
+}
+
+.tbl_list th {
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    background-color: #eee;
+    padding: 3px 6px;
+}
+
+.tbl_list th:last-child {
+    border-right: none;
+}
+
+.tbl_list tr td {
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #ccc;
+    padding: 3px;
+}
+
+.tbl_list td .inactive_cell {
+    color: #777;
+}
+.tbl_list tr td:last-child {
+    border-right: none;
+}
+
+.tbl_list td.file {
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+.tbl_list tr:last-child td {
+    border-bottom: none;
+}
+
+.tbl_list tr.even {
+    background-color: #ffffcc;
+}
+
+/* SORTABLE COLUMNS */
+.tbl_list th a.sortable {
+    color: #333;
+    text-decoration: none;
+    padding-left: 10px;
+}
+
+.tbl_list th a.sortable.active {
+    text-decoration: underline;
+}
+
+.tbl_list th a sup.up {
+    background: url("../img/sort-arrow.gif") no-repeat scroll right 5px transparent;
+    padding: 0 6px 0 2px;
+    color: #555;
+}
+
+.tbl_list th a sup.down {
+    background: url("../img/sort-arrow.gif") no-repeat scroll right -32px transparent;
+    padding: 0 6px 0 2px;
+    color: #555;
+}
+
+/* END SORTABLE COLUMNS */
+
+.page_content {
+    padding: 30px 20px 0;
+    padding-bottom: 20px;
+}
+
+.pager {
+    text-align: center;
+}
+
+.res_usage {
+    padding: 3px 10px;
+    background-color: #999;
+    border-left: 1px solid #777;
+    border-right: 1px solid #777;
+    border-top: 1px solid #777;
+}
+
+/* MESSAGES */
+.messages {
+    font-weight: bold;
+    padding: 5px 50px;
+    text-align: center;
+}
+
+.messages .message {
+    color: green;
+}
+
+.messages .error {
+    color: red;
+}
+
+/* END MESSAGES */
+
+.cpan_content {
+    padding: 10px;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+}
+
+.search_filter {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.search_filter INPUT[type="text"] {
+    border: 1px solid #777;
+}
+
+.search_filter INPUT[type="submit"] {
+    padding: 0 8px;
+}
+
+.auth_label {
+    float: right;
+    padding: 0 40px;
+    font-size: 75%;
+    color: #333;
+    line-height: 30px;
+}
+
+.auth_label a {
+    float: right;
+    margin: 0 30px;
+}
+
+/* TOP STATUS LABEL */
+.top_status {
+    font-size: 80%;
+    font-variant: small-caps;
+}
+
+.top_status span {
+    margin: 0 10px;
+    color: #000;
+}
+
+.top_status span.off {
+    color: #777;
+}
+
+.top_status span.ts_title {
+    font-weight: bold;
+}
+
+/* END TOP STATUS LABEL */
+
+/* Namespace selector */
+.ns_selector {
+    width: 300px;
+    padding: 5px;
+    border: 1px solid #aaa;
+    background-color: #ffffee;
+    font-size: 95%;
+}
+
+.ns_selector textarea {
+    width: 294px;
+    float: right;
+}
+
+.ns_selector input[type=text] {
+    float: right;
+}
+
+.ns_selector input[type=submit] {
+    text-align: center;
+    width: 100%;
+}
+
+.ns_selector .status {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+.ns_selector .status span {
+    font-weight: bold;
+}
+
+/* END Namespace selector */
+
+/* XHP Func list */
+.xhp_fl_summary {
+    margin: 2px 10px;
+    font-size: 90%;
+    font-variant: small-caps;
+    line-height: 28px;
+}
+
+.xhp_fl_summary .title {
+    margin-right: 30px;
+    font-weight: bold;
+}
+
+.xhp_fl_summary .metric {
+    margin-right: 10px;
+}
+
+.xhp_fl_summary .value {
+    font-weight: bold;
+}
+
+/* END XHP Func list */
+
+/* Analyze report form */
+.analyze_report_form {
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    background-color: #FFFFEE;
+    padding: 5px;
+}
+
+.analyze_report_form .half {
+    float: left;
+    width: 49%;
+}
+
+.analyze_report_form textarea {
+    width: 300px;
+    height: 34px;
+}
+
+.analyze_report_form input {
+    vertical-align: top;
+}
+
+/* END  Analyze report form */
+
+/* Analyze function list - search by function form */
+.analyze_fl_search {
+    float: right;
+    line-height: 10px;
+    font-size:90%;
+}
+
+.analyze_fl_search a {
+    margin-left: 20px;
+}
+.analyze_fl_search input[type="text"]
+{
+    width:150px;
+    height:20px;
+}
+.analyze_fl_search textarea{
+    width:150px;
+    height:21px;
+    vertical-align: top;
+}
+
+/* END Analyze function list - search by function form */
+
+/* Collecting start form */
+.collect_start {
+    border: 1px solid #ccc;
+    background-color: #FFFFEE;
+    padding: 5px;
+    margin: 20px 0;
+}
+
+.collect_start .it_limit {
+    width: 40px;
+}
+
+.collect_start .part1 {
+    float: left;
+    width: 25%;
+}
+
+.collect_start .part2 textarea {
+    width: 300px;
+    height: 41px;
+    margin: 0 5px;
+}
+
+.collect_start .part2 .button {
+    margin: 0 30px;
+}
+
+/* END Collecting start form */
+
+span.required {
+    color: red;
+    cursor: default;
+    margin: 0 2px;
+}
+
+
+/* Settings page */
+.settings_global{
+    border: 1px solid #ccc;
+    background-color: #FFFFEE;
+}
+.settings_global .container{
+    width:820px;
+}
+.settings_global .container .field{
+    width: 500px;
+    float:right;
+}
+.settings_global .container div{
+    clear: both;
+}
+/* END Settings page */
