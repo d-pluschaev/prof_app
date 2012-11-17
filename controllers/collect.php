@@ -25,7 +25,16 @@ class ControllerCollect extends ControllerDefault
 
         if ($namespace_source) {
             if ($namespace_target) {
-                if ($this->adjustEnvironment()) {
+
+                $noErrors = $this->applyDependencyErrorIfExists(
+                    array(
+                        'agent' => 1,
+                        'recording_mode' => 0,
+                        'regular_profiler' => 0,
+                    )
+                );
+
+                if ($noErrors) {
                     // create destination namespace
                     App::getModel('resources')->setResultNamespaceInfo(
                         $namespace_target,
@@ -80,31 +89,37 @@ class ControllerCollect extends ControllerDefault
         echo "{$data['step_name']}: {$data['description']} [{$data['step']}%]<br/>";
     }
 
-    protected function adjustEnvironment()
+    protected function applyDependencyErrorIfExists(array $dependencies)
     {
-        $errors = false;
-        // turn on agent, turn off recording mode and turn off regular profiler
-        $maintainAgentModel = App::getModel('maintainAgent');
-        $status = $maintainAgentModel->getStatus();
-        if (!$status['htaccess_changed']) {
-            if (!$maintainAgentModel->setAgentEnabled(true)) {
-                $this->addMessage('error', 'Can not turn on agent');
-                $errors = true;
+        $result = true;
+        $flags = array('OFF', 'ON');
+        $status = App::getModel('maintainAgent')->getStatus();
+        foreach ($dependencies as $dep => $val) {
+            switch ($dep) {
+                case 'agent':
+                    if ((bool)$status['htaccess_changed'] !== (bool)$val) {
+                        $this->addMessage('error', 'Agent should be turned ' . $flags[(int)$val]);
+                        $result = false;
+                    }
+                    break;
+                case 'regular_profiler':
+                    if ((bool)$status['is_regular_profiler_on'] !== (bool)$val) {
+                        $this->addMessage('error', 'Regular profiler should be turned ' . $flags[(int)$val]);
+                        $result = false;
+                    }
+                    break;
+                case 'recording_mode':
+                    if ((bool)$status['recording_mode'] !== (bool)$val) {
+                        $this->addMessage('error', 'Recording mode should be turned ' . $flags[(int)$val]);
+                        $result = false;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
-        if ($status['is_regular_profiler_on']) {
-            if (!$maintainAgentModel->setXhpEnabled(false)) {
-                $this->addMessage('error', 'Can not turn off regular profiler');
-                $errors = true;
-            }
-        }
-        if ($status['recording_mode']) {
-            if (!$maintainAgentModel->setRecordingModeEnabled(false)) {
-                $this->addMessage('error', 'Can not turn off recording_mode');
-                $errors = true;
-            }
-        }
-        return !$errors;
+
+        return $result;
     }
 }
 

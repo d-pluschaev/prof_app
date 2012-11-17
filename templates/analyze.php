@@ -15,7 +15,7 @@ List of namespaces. Open detailed view clicking on the &quot;details&quot; link:
     <?foreach ($this->namespaces as $index => $ns) {
         $tdAttr = $ns['data']['is_regular'] ? ' class="regular"' : '';
         ?>
-    <tr<?=$index & 1 == 0 ? ' class="even"' : ''?>>
+    <tr<?=$index & 1 ? ' class="even"' : ''?>>
         <td width="20px"<?=$tdAttr?>>
             <?=$index + 1?>
         </td>

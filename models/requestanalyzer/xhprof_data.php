@@ -169,7 +169,6 @@ class XHProfData
 
         $hash = array();
 
-
         // prepare structure
         foreach ($data as $item) {
             if (isset($item['child']['name'])) {
@@ -184,7 +183,7 @@ class XHProfData
 
         // main loop
         foreach ($data as $item) {
-            if (isset($item['child']['name'])) {
+            if (isset($item['child']['name']) && isset($item['parent']['name'])) {
 
                 // aggregate metrics
                 foreach ($hash[$item['child']['name']]['data'] as $metricName => &$metric) {
@@ -193,13 +192,13 @@ class XHProfData
                 // aggregate caused calls
                 foreach ($item['caused_calls'] as $ccKey => $ccMetrics) {
 
-                    $hash[$item['child']['name']]['caused_calls'][$ccKey]
-                        = isset($hash[$item['child']['name']]['caused_calls'][$ccKey])
-                        ? $hash[$item['child']['name']]['caused_calls'][$ccKey]
+                    $hash[$item['parent']['name']]['caused_calls'][$ccKey]
+                        = isset($hash[$item['parent']['name']]['caused_calls'][$ccKey])
+                        ? $hash[$item['parent']['name']]['caused_calls'][$ccKey]
                         : $this->getPossibleMetrics();
 
                     foreach ($ccMetrics as $ccMetricName => $ccMetricVal) {
-                        $hash[$item['child']['name']]['caused_calls'][$ccKey][$ccMetricName] += $ccMetricVal;
+                        $hash[$item['parent']['name']]['caused_calls'][$ccKey][$ccMetricName] += $ccMetricVal;
                     }
                 }
 
@@ -235,8 +234,8 @@ class XHProfData
         // for watching calls
         if (substr($this->sortConditions['sort_by'], 0, 3) == 'wf_') {
             $func = substr($this->sortConditions['sort_by'], 3);
-            $a = isset($ap['caused_calls'][$func]['ct']) ? (int)$ap['caused_calls'][$func]['ct'] : 0;
-            $b = isset($bp['caused_calls'][$func]['ct']) ? (int)$bp['caused_calls'][$func]['ct'] : 0;
+            $a = isset($ap['caused_calls'][$func]['ct']) ? (int)$ap['caused_calls'][$func]['ct'] : -1;
+            $b = isset($bp['caused_calls'][$func]['ct']) ? (int)$bp['caused_calls'][$func]['ct'] : -1;
             return $this->sortConditions['desc'] ? $a < $b : $a > $b;
         }
 
@@ -330,40 +329,42 @@ class XHProfData
         return $funcData;
     }
 
-    protected function applyCausedCallsMetricsForFunction($funcName, array $foundParents = array())
+    protected function applyCausedCallsMetricsForFunction($funcName)
     {
-        $nextFoundParents = array();
-
-        if (empty($foundParents)) {
-            $parents = $this->getParentsBy(array('name' => $funcName));
-        } else {
-            $condition = array();
-            $conditionIndex = 0;
-            foreach ($foundParents as $parentFuncName => $foundParent) {
-                $condition['name-' . $conditionIndex] = $parentFuncName;
-            }
-            $parents = $this->getParentsBy($condition);
-        }
-
+        $parents = $this->getParentsBy(array('name' => $funcName));
+        // exclude unused metrics and set up "caused calls" values
+        $usefulMetrics = array('ct', 'wt');
         foreach ($parents as $index => $parent) {
-
-            if(isset($foundParents[$parent['child']['name']])){
-                $this->dataSingle[$parent['index']]['caused_calls'][$funcName]=$foundParents[$parent['child']['name']];
-                foreach ($this->dataSingle[$parent['index']]['caused_calls'][$funcName] as $metricName => &$metric) {
-                    $metric = ($metric ? $metric : 1) * $parent['data'][$metricName];
-                }
-            }else{
-                $this->dataSingle[$parent['index']]['caused_calls'][$funcName] = $parent['data'];
+            $tmp = array();
+            foreach ($usefulMetrics as $metric) {
+                $tmp[$metric] = $parent['data'][$metric];
             }
-
-            if (isset($parent['parent']['name'])) {
-                $nextFoundParents[$parent['parent']['name']]
-                    = $this->dataSingle[$parent['index']]['caused_calls'][$funcName];
-            }
+            $parents[$index]['caused_calls'][$funcName] = $tmp;
+            $this->dataSingle[$parent['index']]['caused_calls'][$funcName] = $tmp;
         }
+        $this->applyCausedCallsMetricsForFunctionBranch($funcName, $parents);
+    }
 
-        if (!empty($nextFoundParents)) {
-            $this->applyCausedCallsMetricsForFunction($funcName, $nextFoundParents);
+    protected function applyCausedCallsMetricsForFunctionBranch($funcName, array $parents)
+    {
+        foreach ($parents as $parent) {
+            if (isset($parent['parent']['name'])) {
+                $ascendants = $this->getParentsBy(array('name' => $parent['parent']['name']));
+                foreach ($ascendants as $ascendantIndex => $ascendant) {
+                    // init array if need
+                    $ascendants[$ascendantIndex]['caused_calls'][$funcName] = isset($ascendant['caused_calls'][$funcName])
+                        ? $ascendant['caused_calls'][$funcName]
+                        : array('ct' => 0, 'wt' => 0);
+                    // increase metrics
+                    foreach ($parent['caused_calls'][$funcName] as $metricName => $metric) {
+                        $ascendants[$ascendantIndex]['caused_calls'][$funcName][$metricName] += $metric;
+                    }
+                    // save data
+                    $this->dataSingle[$ascendant['index']]['caused_calls'][$funcName]
+                        = $ascendants[$ascendantIndex]['caused_calls'][$funcName];
+                }
+                $this->applyCausedCallsMetricsForFunctionBranch($funcName, $ascendants);
+            }
         }
     }
 

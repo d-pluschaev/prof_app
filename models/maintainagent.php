@@ -19,6 +19,8 @@ class ModelMaintainAgent
             // recording_mode & regular profiler settings
             self::$status = array_merge($this->getAgentConfig(), self::$status);
 
+            self::$status['xhprof_installed'] = function_exists('xhprof_enable');
+
             // labels
             self::$status['label_agent_status'] = self::$status['htaccess_changed'] ? 'ON' : 'OFF';
 

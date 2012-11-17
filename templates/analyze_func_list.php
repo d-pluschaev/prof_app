@@ -54,7 +54,7 @@
     <th><?=sortableColumnHeader('Name', 'name', 'str', $this)?></th>
 
     <?foreach($this->watchFunctionsArray as $func){?>
-    <th><?=sortableColumnHeader($func, "wf_$func", 'str', $this)?></th>
+    <th><?=sortableColumnHeader($func, "wf_$func", 'num', $this)?></th>
     <?}?>
 
     <th><?=sortableColumnHeader('Calls', 'ct', 'num', $this)?></th>

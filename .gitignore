@@ -1,5 +1,6 @@
 .idea
 .readme
+.htaccess
 
 data/legacy_profiler_files/*
 !data/legacy_profiler_files/.readme

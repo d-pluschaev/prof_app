@@ -222,7 +222,7 @@ a:hover {
 }
 
 .tbl_list tr.even {
-    background-color: #ffffcc;
+    background-color: #FFFFEE;
 }
 
 /* SORTABLE COLUMNS */
@@ -343,7 +343,7 @@ a:hover {
     width: 300px;
     padding: 5px;
     border: 1px solid #aaa;
-    background-color: #ffffee;
+    background-color: #FFFFCC;
     font-size: 95%;
 }
 
@@ -399,7 +399,7 @@ a:hover {
 .analyze_report_form {
     border: 1px solid #ccc;
     margin-bottom: 15px;
-    background-color: #FFFFEE;
+    background-color: #FFFFCC;
     padding: 5px;
 }
 
@@ -445,7 +445,7 @@ a:hover {
 /* Collecting start form */
 .collect_start {
     border: 1px solid #ccc;
-    background-color: #FFFFEE;
+    background-color: #FFFFCC;
     padding: 5px;
     margin: 20px 0;
 }
@@ -456,7 +456,7 @@ a:hover {
 
 .collect_start .part1 {
     float: left;
-    width: 25%;
+    width: 400px;
 }
 
 .collect_start .part2 textarea {
@@ -481,7 +481,8 @@ span.required {
 /* Settings page */
 .settings_global{
     border: 1px solid #ccc;
-    background-color: #FFFFEE;
+    background-color: #FFFFCC;
+    font-size: 95%;
 }
 .settings_global .container{
     width:820px;

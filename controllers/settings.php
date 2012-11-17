@@ -63,15 +63,21 @@ class ControllerSettings extends ControllerDefault
 
     public function actionToggleRegularProfiler()
     {
-        $noErrors = $this->applyDependencyErrorIfExists(
-            array(
-                'agent' => 1,
-                'recording_mode' => 0,
-            )
+        $dependencies=array(
+            'agent' => 1,
+            'recording_mode' => 0,
         );
 
+        $status = App::getModel('maintainAgent')->getStatus();
+
+        // dependent on XHProf extension if somebody wants to turn ON
+        if (!$status['is_regular_profiler_on']) {
+            $dependencies['xhprof_installed'] = 1;
+        }
+
+        $noErrors = $this->applyDependencyErrorIfExists($dependencies);
+
         if ($noErrors) {
-            $status = App::getModel('maintainAgent')->getStatus();
             $data = array(
                 'regular_profiler_namespace' => App::filterText(Request::get('namespace'), '_'),
                 'regular_profiler_description' => Request::get('description'),
@@ -196,6 +202,12 @@ class ControllerSettings extends ControllerDefault
                 case 'recording_mode':
                     if ((bool)$status['recording_mode'] !== (bool)$val) {
                         $this->addMessage('error', 'Recording mode should be turned ' . $flags[(int)$val]);
+                        $result = false;
+                    }
+                    break;
+                case 'xhprof_installed':
+                    if ((bool)$status['xhprof_installed'] !== (bool)$val) {
+                        $this->addMessage('error', 'XHProf extension is not installed');
                         $result = false;
                     }
                     break;

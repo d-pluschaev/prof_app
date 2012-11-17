@@ -16,8 +16,6 @@ Send requests using previously recorded data and collect profiler results<br/>
 
 <br/>
 Issues which prevents launch: <?= implode(' and ', $problems) ?>
-<br/>
-It is will be corrected automatically if you start
 
 <? } else { ?>
 
