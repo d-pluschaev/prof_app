@@ -9,7 +9,7 @@ data/request_logs/*
 !data/request_logs/.readme
 data/request_results/*
 !data/request_results/.readme
-config.php
+/config.php
 config_dynamic.srz
 auth.txt
 

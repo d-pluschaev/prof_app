@@ -74,7 +74,7 @@
         <td><?=getNameCellHTML($row, $this)?></td>
 
         <?foreach($this->watchFunctionsArray as $func){?>
-        <td width="1%"><?=$row['name'] != $func + 1 ?
+        <td width="1%"><?=$row['name'] != $func ?
             (isset($row['caused_calls'][$func]['ct']) ? $row['caused_calls'][$func]['ct'] : '-')
             : '<span class="inactive_cell">n/a</span>'
             ?></td>

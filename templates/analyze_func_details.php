@@ -1,10 +1,11 @@
 <form action="<?=$this->link()?> method=" get">
 
     <input type="hidden" name="analyze" value=""/>
-    <input type="hidden" name="view_in_xhp" value=""/>
+    <input type="hidden" name="xhp_details" value=""/>
     <input type="hidden" name="namespace" value="<?=$this->namespace?>"/>
     <input type="hidden" name="uid" value="<?=$this->uid?>"/>
     <input type="hidden" name="functions" value="<?=$this->functionsContent?>"/>
+    <input type="hidden" name="func" value="<?=$this->func?>"/>
     <input type="hidden" name="desc" value="<?=$this->sortDesc?>"/>
     <input type="hidden" name="sort" value="<?=$this->sort?>"/>
     <input type="hidden" name="st" value="<?=$this->st?>"/>
@@ -21,6 +22,20 @@
 
     </span>
 
+    <a href="<?=$this->link(
+        array(
+            'controller' => 'analyze',
+            'action' => 'view_in_xhp',
+            'namespace' => $this->namespace,
+            'uid' => $this->uid,
+            'functions' => $this->functionsContent,
+            'desc' => $this->sortDesc,
+            'sort' => $this->sort,
+            'st' => $this->st,
+            'wf' => implode("\n", $this->watchFunctionsArray),
+        )
+    )?>">&lt; display list</a>
+
 </form>
 
 
@@ -28,6 +43,11 @@
     <thead>
     <th><?=sortableColumnHeader('#', 'index', 'num', $this)?></th>
     <th><?=sortableColumnHeader('Name', 'name', 'str', $this)?></th>
+
+    <?foreach($this->watchFunctionsArray as $func){?>
+    <th><?=sortableColumnHeader($func, "wf_$func", 'num', $this)?></th>
+    <?}?>
+
     <th><?=sortableColumnHeader('Calls', 'ct', 'num', $this)?></th>
     <th><?=sortableColumnHeader('Calls %', 'pct', 'num', $this)?></th>
     <th><?=sortableColumnHeader('IWall Time', 'wt', 'num', $this)?></th>
@@ -39,11 +59,19 @@
 
     <!-- Current function -->
     <tr>
-        <td colspan="8" class="file">Current function</td>
+        <td colspan="<?=8+sizeof($this->watchFunctionsArray)?>" class="file">Current function</td>
     </tr>
     <tr>
         <td width="1%">-</td>
         <td><?=getFuncNameLinkCellHTML($this->data, $this)?></td>
+
+        <?foreach($this->watchFunctionsArray as $func){?>
+        <td width="1%"><?=$this->data['name'] != $func ?
+            (isset($this->data['caused_calls'][$func]['ct']) ? $this->data['caused_calls'][$func]['ct'] : '-')
+            : '<span class="inactive_cell">n/a</span>'
+            ?></td>
+        <?}?>
+
         <td width="1%"><?=$this->data['data']['ct']?></td>
         <td width="1%"><?=$this->data['data']['pct']?></td>
         <td width="1%"><?=$this->data['data']['wt']?></td>
@@ -55,6 +83,11 @@
     <!-- Exclusive metrics for current function -->
     <tr class="even">
         <td colspan="2">Exclusive metrics for current function</td>
+
+        <?foreach($this->watchFunctionsArray as $func){?>
+        <td width="1%">-</td>
+        <?}?>
+
         <td width="1%">-</td>
         <td width="1%">-</td>
         <td width="1%"><?=$this->data['data']['ewt']?></td>
@@ -65,7 +98,7 @@
 
     <!-- Parent calls -->
     <tr>
-        <td colspan="8" class="file">Parent calls</td>
+        <td colspan="<?=8+sizeof($this->watchFunctionsArray)?>" class="file">Parent calls</td>
     </tr>
     <?
     $index = 0;
@@ -74,6 +107,14 @@
     <tr<?=$index & 1 ? ' class="even"' : ''?>>
         <td width="1%"><?=$row['index'] + 1?></td>
         <td><?=getFuncNameLinkCellHTML($row, $this)?></td>
+
+        <?foreach($this->watchFunctionsArray as $func){?>
+        <td width="1%"><?=$row['name'] != $func ?
+            (isset($row['caused_calls'][$func]['ct']) ? $row['caused_calls'][$func]['ct'] : '-')
+            : '<span class="inactive_cell">n/a</span>'
+            ?></td>
+        <?}?>
+
         <td width="1%"><?=$row['data']['ct']?></td>
         <td width="1%"><?=$row['data']['pct']?></td>
         <td width="1%"><?=$row['data']['wt']?></td>
@@ -87,7 +128,7 @@
 
     <!-- Child calls -->
     <tr>
-        <td colspan="8" class="file">Child calls</td>
+        <td colspan="<?=8+sizeof($this->watchFunctionsArray)?>" class="file">Child calls</td>
     </tr>
     <?
     $index = 0;
@@ -96,6 +137,14 @@
     <tr<?=$index & 1 ? ' class="even"' : ''?>>
         <td width="1%"><?=$row['index'] + 1?></td>
         <td><?=getFuncNameLinkCellHTML($row, $this)?></td>
+
+        <?foreach($this->watchFunctionsArray as $func){?>
+        <td width="1%"><?=$row['name'] != $func ?
+            (isset($row['caused_calls'][$func]['ct']) ? $row['caused_calls'][$func]['ct'] : '-')
+            : '<span class="inactive_cell">n/a</span>'
+            ?></td>
+        <?}?>
+
         <td width="1%"><?=$row['data']['ct']?></td>
         <td width="1%"><?=$row['data']['pct']?></td>
         <td width="1%"><?=$row['data']['wt']?></td>
@@ -155,6 +204,7 @@ function sortableColumnHeader($title, $key, $sortType, $tpl)
                     'desc' => $linkSortDesc,
                     'sort' => $linkSort,
                     'st' => $linkSortType,
+                    'wf' => implode("\n", $tpl->watchFunctionsArray),
                 )
             )
             . '">'
@@ -176,6 +226,7 @@ function getFuncNameLinkCellHTML(array $row, $tpl)
                 'namespace' => $tpl->namespace,
                 'uid' => $tpl->uid,
                 'func' => $row['name'],
+                'wf' => implode("\n", $tpl->watchFunctionsArray),
             )
         )
         . '">' . $row['name'] . '</a>';

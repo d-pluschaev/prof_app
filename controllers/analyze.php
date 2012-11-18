@@ -173,7 +173,7 @@ class ControllerAnalyze extends ControllerDefault
         $sort = App::filterText(Request::get('sort', 'wt'), '_:');
         $sortDesc = Request::get('desc', 1) ? 1 : 0;
         $sortType = App::filterText(Request::get('st'), '_');
-        $func = App::filterText(Request::get('func'), '_:()');
+        $func = App::filterText(Request::get('func'), '_:()\/.');
 
         // get filtered watch functions
         $watchFunctions = $this->getWatchFunctionsArray();
@@ -183,6 +183,7 @@ class ControllerAnalyze extends ControllerDefault
 
             $xhpDataProcessor = App::getModel('resultsAnalyzer')->getXhpDataProcessor();
             $xhpDataProcessor->loadSingle($xhpData);
+            $xhpDataProcessor->applyCausedCallsMetricsFor($watchFunctions);
 
             try {
                 $funcData = $xhpDataProcessor->getFullFunctionInfo($func, $sort, $sortDesc, $sortType);
@@ -215,7 +216,7 @@ class ControllerAnalyze extends ControllerDefault
         $watchFunctionsData = explode("\n", Request::get('wf', ''));
         $watchFunctions = array();
         foreach ($watchFunctionsData as $func) {
-            $func = App::filterText($func, '_:');
+            $func = App::filterText($func, '_:\/.');
             if ($func) {
                 $watchFunctions[] = $func;
             }
