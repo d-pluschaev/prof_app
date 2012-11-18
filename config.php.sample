@@ -20,6 +20,7 @@ $config = array(
             'analyze:*',
             'collect:*',
             'settings:*',
+            'diff:*',
 
         ),
         'user' => array(

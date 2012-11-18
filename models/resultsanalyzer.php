@@ -34,8 +34,12 @@ class ModelResultsAnalyzer
     {
         foreach ($this->data as $index => $data) {
             $xhp = $this->getXhpDataProcessor();
-            $xhp->loadSingle(unserialize(file_get_contents($data['files']['xhp_path'])));
-            $this->data[$index]['xhp_found'] = $xhp->getStatByFunctions($functions);
+            if (is_file($data['files']['xhp_path'])) {
+                $xhp->loadSingle(unserialize(file_get_contents($data['files']['xhp_path'])));
+                $this->data[$index]['xhp_found'] = $xhp->getStatByFunctions($functions);
+            } else {
+                throw new Exception('Could not load XHP file');
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-<form action="<?=$this->link()?> method=" get">
+<form action="<?=$this->link()?> method="get">
 
     <input type="hidden" name="analyze" value=""/>
     <input type="hidden" name="view_in_xhp" value=""/>
@@ -15,6 +15,14 @@
         <span class="metric">cpu [ <span class="value"><?=$this->main['cpu']?></span> ] microseconds</span>
         <span class="metric">peak memory usage [ <span class="value"><?=$this->main['pmu']?></span> ] bytes</span>
     </span>
+
+    <a href="<?=$this->link(
+        array(
+            'controller' => 'analyze',
+            'action' => 'report',
+            'namespace' => $this->namespace,
+        )
+    )?>">&lt; report</a>
 
     <span class="analyze_fl_search">
 
