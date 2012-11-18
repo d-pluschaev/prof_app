@@ -38,6 +38,13 @@
 /*   TABLE   */
 ?>
 
+<a href="<?=$this->link(
+    array(
+        'controller' => 'analyze',
+        'action' => 'default',
+    )
+)?>" style="margin-right:50px;">&lt; list of namespaces</a>
+
 Collected data. Function cells: (calls number / wall time / CPU resource) also see parents in tooltip:
 <table cellpadding="0" cellspacing="0" class="tbl_list">
     <thead>
@@ -230,7 +237,7 @@ function getActionLinksCellHTML(array $row, $tpl)
 {
     $links = array();
     if ($row['files']['xhp_is_exists']) {
-        $links[] = '<a target="_blank" href="' . $tpl->link(
+        $links[] = '<a href="' . $tpl->link(
             array(
                 'controller' => 'analyze',
                 'action' => 'view_in_xhp',
@@ -238,7 +245,7 @@ function getActionLinksCellHTML(array $row, $tpl)
                 'uid' => $row['uid'],
             )
         ) . '">XHP</a>';
-        $links[] = '<a target="_blank" href="' . $tpl->link(
+        $links[] = '<a href="' . $tpl->link(
             array(
                 'controller' => 'analyze',
                 'action' => 'view_in_xhp_legacy',

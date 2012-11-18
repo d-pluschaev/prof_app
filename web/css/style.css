@@ -179,7 +179,7 @@ a:hover {
 }
 
 .tbl_list {
-
+    margin-top: 3px;
 }
 
 .tbl_list {
@@ -208,6 +208,7 @@ a:hover {
 .tbl_list td .inactive_cell {
     color: #777;
 }
+
 .tbl_list tr td:last-child {
     border-right: none;
 }
@@ -427,20 +428,21 @@ a:hover {
 .analyze_fl_search {
     float: right;
     line-height: 10px;
-    font-size:90%;
+    font-size: 90%;
 }
 
 .analyze_fl_search a {
     margin-left: 20px;
 }
-.analyze_fl_search input[type="text"]
-{
-    width:150px;
-    height:20px;
+
+.analyze_fl_search input[type="text"] {
+    width: 150px;
+    height: 20px;
 }
-.analyze_fl_search textarea{
-    width:150px;
-    height:21px;
+
+.analyze_fl_search textarea {
+    width: 150px;
+    height: 21px;
     vertical-align: top;
 }
 
@@ -481,21 +483,82 @@ span.required {
     margin: 0 2px;
 }
 
-
 /* Settings page */
-.settings_global{
+.settings_global {
     border: 1px solid #ccc;
     background-color: #FFFFCC;
     font-size: 95%;
 }
-.settings_global .container{
-    width:820px;
+
+.settings_global .container {
+    width: 820px;
 }
-.settings_global .container .field{
+
+.settings_global .container .field {
     width: 500px;
-    float:right;
+    float: right;
 }
-.settings_global .container div{
+
+.settings_global .container div {
     clear: both;
 }
+
 /* END Settings page */
+
+.d_popup {
+    position: absolute;
+    width: 500px;
+    background-color: #fff;
+    left: 50%;
+    margin-left: -250px;
+    top: 20%;
+    padding: 8px;
+    border: 1px solid #999999;
+    box-shadow: 4px 4px 10px 0 #999999;
+}
+
+.d_popup div.submit {
+    text-align: center;
+}
+
+.d_popup input {
+    padding: 0 10px;
+    margin: 4px;
+}
+
+.d_popup textarea {
+    width: 100%;
+}
+
+.diff_status {
+    text-align: center;
+}
+
+.diff_func_metrics span.inc {
+    background-color: #CCFFCC;
+}
+
+.diff_func_metrics span.dec {
+    background-color: #FFCCCC;
+}
+
+.diff_func_metrics span {
+    padding: 0 2px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    background-color: #eee;
+    color: #333;
+}
+
+.diff_func_metrics span:last-child {
+    border-right: 1px solid #ccc;
+}
+
+.dec {
+    color: red;
+}
+
+.inc {
+    color: green;
+}

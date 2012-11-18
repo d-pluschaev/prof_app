@@ -189,7 +189,7 @@ class XHProfData
                 foreach ($hash[$item['child']['name']]['data'] as $metricName => &$metric) {
                     $metric += $item['data'][$metricName];
                 }
-                if(isset($item['parent']['name'])){
+                if (isset($item['parent']['name'])) {
                     // aggregate caused calls
                     foreach ($item['caused_calls'] as $ccKey => $ccMetrics) {
 
