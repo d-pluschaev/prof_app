@@ -43,8 +43,9 @@ class ControllerSettings extends ControllerDefault
     public function actionToggleAgent()
     {
         $status = App::getModel('maintainAgent')->getStatus();
-        ;
-        if (!$status['htaccess_changed']) {
+        $justTurnOn = App::filterText(Request::get('on'));
+
+        if (!$status['htaccess_changed'] || $justTurnOn) {
             if (!App::getModel('maintainAgent')->setAgentEnabled(true)) {
                 $this->addMessage('error', 'Can not turn on agent');
             } else {

@@ -22,6 +22,7 @@ class ControllerCollect extends ControllerDefault
         $test_mode = Request::get('test_mode');
         $test_count = Request::get('test_count');
         $description = Request::get('description');
+        $response = App::filterText(Request::get('response_type'));
 
         if ($namespace_source) {
             if ($namespace_target) {
@@ -63,14 +64,26 @@ class ControllerCollect extends ControllerDefault
                             $test_count
                         );
 
-                        $collector->start(array($this, 'resultsCollectorProgressExtraOutput'));
+                        $collector->start(
+                            $response == 'json' ? null : array($this, 'resultsCollectorProgressExtraOutput')
+                        );
 
                     } catch (Exception $e) {
                         $this->addMessage('error', $e->getMessage());
                     }
 
+                    $errors = $this->getMessages('error');
+
+                    if ($response == 'json') {
+                        return array(
+                            'namespace_target' => $namespace_target,
+                            'finished_correctly' => empty($errors),
+                            'errors' => $errors,
+                        );
+                    }
+
                     $tpl = new Template('collect_log', '');
-                    $tpl->errors = $this->getMessages('error');
+                    $tpl->errors = $errors;
                     $tpl->namespace_target = $namespace_target;
                     App::getModel('resources')->setResultNamespaceInfo($namespace_target);
                     return $tpl;
