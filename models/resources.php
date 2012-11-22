@@ -72,6 +72,22 @@ class ModelResources
         return $output;
     }
 
+    public function removeResultNamespace($namespace)
+    {
+        if ($namespace) {
+            $dir = App::cfg('path_request_results') . $namespace;
+            if (is_dir($dir)) {
+                if (!$this->cleanDir($dir, true)) {
+                    throw new Exception('Could not remove namespace directory');
+                }
+            } else {
+                throw new Exception('Namespace directory not found');
+            }
+        } else {
+            throw new Exception('Namespace is empty');
+        }
+    }
+
     protected function sortByMTime($a, $b)
     {
         return floatval($a['mtime']) < floatval($b['mtime']);
@@ -96,6 +112,35 @@ class ModelResources
             return file_put_contents($dirInfoFile, serialize($info));
         } else {
             throw new Exception("Namespace directory `" . basename($dir) . "` not found");
+        }
+    }
+
+    protected function cleanDir($dir, $also_remove_dir = false)
+    {
+        $dir = substr($dir, -1) == '/' ? substr($dir, 0, -1) : $dir;
+        if (!file_exists($dir) || !is_dir($dir)) {
+            return false;
+        } elseif (!is_readable($dir)) {
+            return false;
+        } else {
+            $dir_handle = opendir($dir);
+            while ($contents = readdir($dir_handle)) {
+                if ($contents != '.' && $contents != '..') {
+                    $path = $dir . '/' . $contents;
+                    if (is_dir($path)) {
+                        if (!$this->cleanDir($path, true)) {
+                            return false;
+                        }
+                    } else {
+                        unlink($path);
+                    }
+                }
+            }
+            closedir($dir_handle);
+            if ($also_remove_dir && !rmdir($dir)) {
+                return false;
+            }
+            return true;
         }
     }
 }

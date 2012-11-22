@@ -68,6 +68,8 @@ class ControllerCollect extends ControllerDefault
                             $response == 'json' ? null : array($this, 'resultsCollectorProgressExtraOutput')
                         );
 
+                        App::getModel('resources')->setResultNamespaceInfo($namespace_target);
+
                     } catch (Exception $e) {
                         $this->addMessage('error', $e->getMessage());
                     }
@@ -85,7 +87,6 @@ class ControllerCollect extends ControllerDefault
                     $tpl = new Template('collect_log', '');
                     $tpl->errors = $errors;
                     $tpl->namespace_target = $namespace_target;
-                    App::getModel('resources')->setResultNamespaceInfo($namespace_target);
                     return $tpl;
                 }
             } else {
@@ -95,6 +96,22 @@ class ControllerCollect extends ControllerDefault
             $this->addMessage('error', 'Source namespace was not selected');
         }
         App::forwardSafe(null, 'default');
+    }
+
+    public function actionRemove()
+    {
+        $namespace = App::filterText(Request::get('namespace'), '_');
+        $response = App::filterText(Request::get('response_type'));
+        $error = '';
+        try {
+            App::getModel('resources')->removeResultNamespace($namespace);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+        }
+        return array(
+            'code' => empty($error) ? 0 : 1,
+            'error' => $error,
+        );
     }
 
     public function resultsCollectorProgressExtraOutput(array $data)

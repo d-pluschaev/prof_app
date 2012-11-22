@@ -78,6 +78,7 @@ class App
         if (method_exists($this->controller, $action)) {
             // check access
             if ($this->authentication->hasAccessToRoute($this->route)) {
+                $this->controller->preProcess();
                 $view = $this->controller->$action();
                 return $this->controller->postProcess($view);
             } else {
