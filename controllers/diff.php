@@ -6,6 +6,7 @@ class ControllerDiff extends ControllerDefault
     {
         $namespaceSource = App::filterText(Request::get('source'), '_');
         $namespaceTarget = App::filterText(Request::get('target'), '_');
+        $response = App::filterText(Request::get('response_type'));
 
         if ($namespaceSource && $namespaceTarget) {
 
@@ -31,13 +32,25 @@ class ControllerDiff extends ControllerDefault
                 $functions
             );
 
+            $diffSummary = App::getModel('diff')->getDiffSummary($diff);
+
+            if ($response == 'json') {
+                return array(
+                    'namespace_source' => $namespaceSource,
+                    'namespace_target' => $namespaceTarget,
+                    'diff' => $diff,
+                    'functions' => $functions,
+                    'diff_summary' => $diffSummary,
+                );
+            }
+
             $tpl = new Template('diff_namespaces');
             $tpl->title = "Profiler Web Interface: Diff namespaces '$namespaceSource' and `$namespaceTarget`";
             $tpl->namespace = $namespaceSource;
             $tpl->breadcrumb = "Diff namespaces '$namespaceSource' and `$namespaceTarget`";
             $tpl->diff = $diff;
             $tpl->functions = $functions;
-            $tpl->diffSummary = App::getModel('diff')->getDiffSummary($diff);
+            $tpl->diffSummary = $diffSummary;
 
             return $tpl;
         } else {

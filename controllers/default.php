@@ -10,6 +10,23 @@ class ControllerDefault
         return $tpl;
     }
 
+    public function preProcess()
+    {
+        // Allow to override maintaining application properties in HTTP request
+        $overriddenMaintainingAppPath = Request::get('overridden_ma_path');
+        $overriddenMaintainingAppUrl = Request::get('overridden_ma_url');
+        if ($overriddenMaintainingAppPath && $overriddenMaintainingAppUrl) {
+            $config = array(
+                'maintaining_application_url' => $overriddenMaintainingAppUrl,
+                'maintaining_application_web_dir' => $overriddenMaintainingAppPath,
+            );
+            $root = App::cfg('root');
+            require $root . 'config.php';
+            $config['root'] = $root;
+            App::$instance->config = $config;
+        }
+    }
+
     public function postProcess($view)
     {
         if ($view instanceof Template) {

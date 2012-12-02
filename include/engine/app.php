@@ -78,6 +78,7 @@ class App
         if (method_exists($this->controller, $action)) {
             // check access
             if ($this->authentication->hasAccessToRoute($this->route)) {
+                $this->controller->preProcess();
                 $view = $this->controller->$action();
                 return $this->controller->postProcess($view);
             } else {
@@ -97,8 +98,15 @@ class App
     {
         if ($view instanceof Template) {
             echo $view->render();
-        } else {
-            print_r($view);
+        } elseif(is_string($view)) {
+            print($view);
+        } elseif(is_array($view)) {
+            $responseType =  Request::get('response_type');
+            if($responseType == 'json'){
+                echo json_encode($view);
+            }else{
+                print_r($view);
+            }
         }
     }
 
