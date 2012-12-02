@@ -548,17 +548,124 @@ span.required {
     border-right: 1px solid #ccc;
     border-left: 1px solid #ccc;
     background-color: #eee;
-    color: #333;
+    color: #000;
+    cursor: default;
 }
 
 .diff_func_metrics span:last-child {
     border-right: 1px solid #ccc;
 }
 
-.dec {
-    color: red;
+/* BEGIN Diff diagram */
+.diff_diagram {
+    border: 2px solid #777;
+    background-color: #f7f7f7;
 }
 
-.inc {
-    color: green;
+.diff_diagram tr td {
+    border-right: 1px solid #999;
 }
+
+.diff_diagram tr td:last-child {
+    border-right: none;
+}
+
+.diff_diagram tr td {
+    vertical-align: top;
+    padding: 0 2px;
+}
+
+.diff_diagram tr:first-child td {
+    vertical-align: bottom;
+    padding: 0 2px 0;
+    border-bottom: 1px solid #999;
+}
+
+.diff_diagram .box_improvement {
+    background-color: #2e8b57;
+    border: 1px solid #777;
+}
+
+.diff_diagram .box_regression {
+    background-color: #CC0033;
+    border: 1px solid #777;
+}
+
+.diff_diagram tr .bar_label {
+    text-align: center;
+    font-weight: bold;
+    font-size: 90%;
+}
+
+.diff_diagram tr:first-child .bar_label {
+}
+
+.diff_diagram tr:last-child td {
+    border-top: 1px solid #999;
+    text-align: center;
+    font-size: 90%;
+    padding: 2px;
+}
+
+.diff_diagram tr:first-child td:last-child {
+    vertical-align: top;
+    padding: 0;
+}
+
+.diff_diagram tr:first-child td:last-child div {
+    width: 108px;
+}
+
+.diff_diagram tr:first-child td:last-child .bar,
+.diff_diagram tr:first-child td:last-child .bar_track {
+    position: absolute;
+    width: 104px;
+    padding: 0 1px;
+}
+
+.diff_diagram tr:first-child td:last-child .bar_track {
+    background-color: #FFCCCC;
+    opacity: 0.7;
+}
+
+.diff_diagram tr:first-child td:last-child .bar_track.improvement {
+    background-color: #CCFFCC;
+}
+
+.diff_diagram tr:first-child td:last-child .bar_track.hover {
+    background-color: #CC0033;
+    opacity: 0.7;
+    border-bottom: 1px dashed #000;
+}
+
+.diff_diagram tr:first-child td:last-child .bar_track.hover.improvement {
+    background-color: #2E8B57;
+    border-top: 1px dashed #000;
+    border-bottom: none;
+}
+
+.diff_diagram tr:first-child td:last-child .bar .label_r {
+    font-weight: bold;
+    position: absolute;
+    text-align: center;
+}
+
+.diff_diagram tr:first-child td:last-child .bar .label_i {
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+}
+
+.diff_diagram .inactive {
+    color: #999;
+}
+
+.diff_func_type_marker {
+    background-color: #DDDDDD;
+    font-weight: bold;
+    padding: 0 2px;
+    cursor: default;
+}
+
+/* END Diff diagram */

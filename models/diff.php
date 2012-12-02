@@ -35,26 +35,49 @@ class ModelDiff
         $funcDiff = array();
         foreach ($functions as $func) {
             if (isset($target["func_$func"]) && isset($source["func_$func"])) {
-                $funcDiff[$func] = $target["func_$func"]['summary'];
-                foreach ($funcDiff[$func] as $k => $v) {
-                    $funcDiff[$func][$k] -= $source["func_$func"]['summary'][$k];
+                $funcDiff[$func] = array();
+                foreach ($target["func_$func"]['summary'] as $k => $v) {
+                    $funcDiff[$func][$k] = array(
+                        't' => $v,
+                        's' => $source["func_$func"]['summary'][$k],
+                        'd' => $source["func_$func"]['summary'][$k] - $v,
+                    );
                 }
                 $funcDiff[$func]['status'] = 0;
             } elseif (isset($target["func_$func"])) {
-                $funcDiff[$func] = $target["func_$func"]['summary'];
+                $funcDiff[$func] = array();
+                foreach ($target["func_$func"]['summary'] as $k => $v) {
+                    $funcDiff[$func][$k] = array(
+                        't' => $v,
+                        's' => 0,
+                        'd' => -$v,
+                    );
+                }
                 $funcDiff[$func]['status'] = 1;
             } elseif (isset($source["func_$func"])) {
-                $funcDiff[$func] = $source["func_$func"]['summary'];
-                foreach ($funcDiff[$func] as $k => $v) {
-                    $funcDiff[$func][$k] = $v * -1;
+                $funcDiff[$func] = array();
+                foreach ($source["func_$func"]['summary'] as $k => $v) {
+                    $funcDiff[$func][$k] = array(
+                        't' => 0,
+                        's' => $v,
+                        'd' => $v,
+                    );
                 }
                 $funcDiff[$func]['status'] = -1;
             }
         }
 
         return array(
-            'time' => (float)$target['time'] - (float)$source['time'],
-            'html_footer_time' => (float)$target['html_footer_time'] - (float)$source['html_footer_time'],
+            'time' => array(
+                't' => (float)$target['time'],
+                's' => (float)$source['time'],
+                'd' => (float)$source['time'] - (float)$target['time'],
+            ),
+            'html_footer_time' => array(
+                't' => (float)$target['html_footer_time'],
+                's' => (float)$source['html_footer_time'],
+                'd' => (float)$source['html_footer_time'] - (float)$target['html_footer_time'],
+            ),
             'http_code_changed' => $target['http_code'] !== $source['http_code'],
             'html_footer_time_changed' => (bool)strlen($target['html_footer_time'])
                 !== (bool)strlen($source['html_footer_time']),
@@ -68,18 +91,28 @@ class ModelDiff
             'total' => 0,
             'removed' => 0,
             'added' => 0,
-            'time' => 0,
-            'html_footer_time' => 0,
+            'time' => array(),
+            'html_footer_time' => array(),
             'functions' => array(),
         );
         foreach ($diff as $element) {
             $summary['total']++;
             $summary['removed'] += isset($element['removed']) ? (int)$element['removed'] : 0;
             $summary['added'] += isset($element['added']) ? (int)$element['added'] : 0;
-            $summary['time'] += isset($element['data']['time']) ? (float)$element['data']['time'] : 0;
-            $summary['html_footer_time'] += isset($element['data']['html_footer_time'])
-                ? (float)$element['data']['html_footer_time']
-                : 0;
+
+            foreach (array(
+                         'time',
+                         'html_footer_time',
+                     ) as $metric) {
+                if (isset($element['data'][$metric])) {
+                    foreach ($element['data'][$metric] as $k => $v) {
+                        if (!isset($summary[$metric][$k])) {
+                            $summary[$metric][$k] = 0;
+                        }
+                        $summary[$metric][$k] += $v;
+                    }
+                }
+            }
 
             if (isset($element['data']['func_diff'])) {
                 foreach ($element['data']['func_diff'] as $func => $funcData) {
@@ -87,7 +120,11 @@ class ModelDiff
                         $summary['functions'][$func] = $funcData;
                     } else {
                         foreach ($funcData as $k => $v) {
-                            $summary['functions'][$func][$k] += $v;
+                            if (is_array($v)) {
+                                foreach ($v as $mk => $mv) {
+                                    $summary['functions'][$func][$k][$mk] += $mv;
+                                }
+                            }
                         }
                     }
                 }

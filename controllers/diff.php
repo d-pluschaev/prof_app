@@ -33,6 +33,7 @@ class ControllerDiff extends ControllerDefault
 
             $tpl = new Template('diff_namespaces');
             $tpl->title = "Profiler Web Interface: Diff namespaces '$namespaceSource' and `$namespaceTarget`";
+            $tpl->namespace = $namespaceSource;
             $tpl->breadcrumb = "Diff namespaces '$namespaceSource' and `$namespaceTarget`";
             $tpl->diff = $diff;
             $tpl->functions = $functions;

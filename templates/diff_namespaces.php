@@ -1,3 +1,25 @@
+<?
+$requestForm = array('controller' => 'diff', 'action' => 'namespaces') + $_REQUEST;
+unset($requestForm['diff']);
+unset($requestForm['namespaces']);
+$requestForm['source'] = $requestForm['target'];
+$requestForm['target'] = $this->namespace;
+$link = $this->link($requestForm);
+?>
+
+<b>All metrics calculated for namespace `<?=$this->namespace?>`</b>
+<a href="<?=$link?>">Swap namespaces</a>
+<br/><br/>
+
+
+<b>Summary Diagram:</b>
+<?=
+$this->includeFragment('diff_diagram')
+; ?>
+
+<br/>
+
+
 <b>Summary:</b>
 <table cellpadding="0" cellspacing="0" class="tbl_list" style="width:400px;">
     <thead>
@@ -9,17 +31,23 @@
 
     <tr>
         <td>Request count:</td>
-        <td><?=getMetricHTML($this->diffSummary['added'] - $this->diffSummary['removed'])?></td>
+        <td><?=getDetailedMetricHTML(
+            array(
+                's' => $this->diffSummary['added'],
+                't' => $this->diffSummary['removed'],
+                'd' => $this->diffSummary['added'] - $this->diffSummary['removed'],
+            )
+        )?></td>
     </tr>
 
     <tr>
         <td>Time:</td>
-        <td><?=getMetricHTML($this->diffSummary['time']);?></td>
+        <td><?=getDetailedMetricHTML($this->diffSummary['time']);?></td>
     </tr>
 
     <tr>
         <td>HTML Footer Time:</td>
-        <td><?=getMetricHTML($this->diffSummary['html_footer_time']);?></td>
+        <td><?=getDetailedMetricHTML($this->diffSummary['html_footer_time']);?></td>
     </tr>
 
     <?if (sizeof($this->diffSummary['functions'])) { ?>
@@ -38,18 +66,6 @@
     </tbody>
 </table>
 
-<div>
-    Legend:
-    <span class="inc">Improvement</span> /
-    <span class="dec">Regression</span> /
-    <span class="diff_func_metrics">
-        <span>Calls</span><span>Time</span><span>CPU</span><span>Memory</span> /
-
-        <span>Not changed</span>
-        <span class="inc">Improvement</span>
-        <span class="dec">Regression</span>
-    </span>
-</div>
 
 
 <br/>
@@ -93,6 +109,39 @@
     </tbody>
 </table>
 
+
+
+<div style="padding:20px 6px;">
+    <b>Legend:</b>
+    <br/>
+    <span class="diff_func_metrics">
+        <span>Calls</span><span>Time</span><span>CPU</span><span>Memory</span> /
+
+        <span>Not changed</span>
+        <span class="inc">Improvement</span>
+        <span class="dec">Regression</span>
+    </span>
+    <br/>
+    Improvement %:
+    <?foreach (getColorScheme('green') as $k => $v) { ?>
+    <span style="background-color:#<?=$v?>;"><?=$k?></span>
+    <? }?>
+    <br/>
+    Regression %:
+    <?foreach (getColorScheme('red') as $k => $v) { ?>
+    <span style="background-color:#<?=$v?>;"><?=$k?></span>
+    <? }?>
+    <br/>
+    See tooltips for details
+</div>
+
+<div style="padding:20px 6px;">
+    <?
+    $link = $this->link($requestForm);
+    ?>
+    Direct link on this page: <a href="<?=$link?>"><?=$link?></a>
+</div>
+
 <?
 
 function getChangesCellHTML(array $row)
@@ -126,26 +175,45 @@ function getChangesCellHTML(array $row)
 
 function getFloatCalcCellHTML(array $array, $key1, $key2)
 {
-    if (isset($array[$key1][$key2])) {
-        return getMetricHTML($array[$key1][$key2]);
+    if (isset($array[$key1][$key2]['s'])) {
+        return getDetailedMetricHTML($array[$key1][$key2]);
     } else {
         return '&nbsp;';
     }
 }
 
-function getMetricHTML($metric)
+function getDetailedMetricHTML(array $std)
 {
-    $class = $metric > 0 ? 'dec' : ($metric < 0 ? 'inc' : '');
-    return "<span class=\"{$class}\">{$metric}</span>";
+    if ($std['s'] == 0 || $std['t'] == 0) {
+        $percentage = $std['t'] == $std['s'] ? 0 : 100;
+    } else {
+        $percentage = round((($std['s'] / $std['t']) - 1) * 100, 2);
+    }
+
+    $color = '';
+    foreach (($std['d'] > 0 ? getColorScheme('red') : getColorScheme('green')) as $pVal => $col) {
+        if ($pVal == 100 || $pVal >= abs($percentage)) {
+            $color = "#$col";
+            break;
+        }
+    }
+
+    $percentage = ($percentage > 0 ? '+' . $percentage : $percentage) . '%';
+
+    $class = $std['d'] > 0 ? 'dec' : ($std['d'] < 0 ? 'inc' : '');
+    return "<span title=\"{$percentage} [{$std['t']}=>{$std['s']}]\""
+        . " class=\"{$class}\" "
+        . ($percentage == 0 ? '' : "style=\"background-color:{$color}\"")
+        . ">{$std['d']}</span>";
 }
 
 function getFuncMetricHTML($metrics)
 {
     return '<div title="Calls / Time / CPU / Memory" class="diff_func_metrics">'
-        . getMetricHTML($metrics['ct'])
-        . getMetricHTML($metrics['wt'])
-        . getMetricHTML($metrics['cpu'])
-        . getMetricHTML($metrics['mu'])
+        . getDetailedMetricHTML($metrics['ct'])
+        . getDetailedMetricHTML($metrics['wt'])
+        . getDetailedMetricHTML($metrics['cpu'])
+        . getDetailedMetricHTML($metrics['mu'])
         . '</div>';
 }
 
@@ -156,4 +224,40 @@ function getFuncCalcCellHTML(array $row, $func)
     } else {
         return '&nbsp;';
     }
+}
+
+function getColorScheme($key)
+{
+    $data = array(
+        'green' => array(
+            1 => 'DBFFDB',
+            5 => 'C2FFC2',
+            10 => 'A8FFA8',
+            15 => '8FFF8F',
+            20 => '75FF75',
+            25 => '5CFF5C',
+            30 => '42FF42',
+            40 => '0FFF0F',
+            50 => '00F500',
+            60 => '00DB00',
+            70 => '00C200',
+            85 => '00A800',
+            100 => '008F00',
+        ),
+
+        'red' => array(
+            1 => 'FFE4DB',
+            5 => 'FFD1C2',
+            10 => 'FFBEA8',
+            15 => 'FFAB8F',
+            20 => 'FF9875',
+            30 => 'FF855C',
+            40 => 'FF7142',
+            50 => 'FF5E29',
+            65 => 'FF4B0F',
+            80 => 'F53D00',
+            100 => 'DB3700',
+        )
+    );
+    return $data[$key];
 }
