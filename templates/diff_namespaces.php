@@ -74,6 +74,7 @@ $this->includeFragment('diff_diagram')
     <thead>
     <th>#</th>
     <th>UID</th>
+    <th>Request</th>
     <th>Changes</th>
     <th>Time</th>
     <th>HTML Footer Time</th>
@@ -88,11 +89,13 @@ $this->includeFragment('diff_diagram')
     <?
     $index = 0;
     foreach ($this->diff as $uid => $row) {
-        ?>
+        $row['index']=$index;
+    ?>
 
     <tr<?=$index & 1 ? ' class="even"' : ''?>>
         <td width="1%"><?=$index + 1?></td>
         <td><?=$uid?></td>
+        <td><?=getRequestCellHTML($row)?></td>
         <td width="1%"><?=getChangesCellHTML($row)?></td>
         <td><?=getFloatCalcCellHTML($row, 'data', 'time')?></td>
         <td><?=getFloatCalcCellHTML($row, 'data', 'html_footer_time')?></td>
@@ -141,6 +144,21 @@ $this->includeFragment('diff_diagram')
     ?>
     Direct link on this page: <a href="<?=$link?>"><?=$link?></a>
 </div>
+
+
+<script type="text/javascript">
+    function toggleReq(id, full) {
+        if (full) {
+            document.getElementById('b_' + id).style.display = 'block';
+            document.getElementById('s_' + id).style.display = 'none';
+        } else {
+            document.getElementById('s_' + id).style.display = 'block';
+            document.getElementById('b_' + id).style.display = 'none';
+        }
+    }
+</script>
+
+
 
 <?
 
@@ -261,3 +279,56 @@ function getColorScheme($key)
     );
     return $data[$key];
 }
+
+function getRequestCellHTML(array $row)
+{
+    $url = http_build_query($row['req']);
+    $url = App::cfg('maintaining_project_url') . ($url ? '?' . $url : '');
+
+    $full_req = '<div style="display:none" id="b_' . $row['index'] . '">'
+        . '<pre style="width:99%;">' . printr($row['req']) . '</pre>'
+        . '<a href="javascript:toggleReq(' . $row['index'] . ')">Show short</a> '
+        . '| <a target="_blank" href="' . $url . '">Link</a>'
+        . '<div>';
+
+    $short_req = '<div id="s_' . $row['index'] . '">'
+        . '<pre style="width:99%;">' . printr(
+        array(
+            'module' => isset($row['req']['module']) ? $row['req']['module'] : 'n/a',
+            'action' => isset($row['req']['action']) ? $row['req']['action'] : 'n/a',
+        )
+    )
+        . '</pre>'
+        . '<a href="javascript:toggleReq(' . $row['index'] . ',1)">Show full</a> '
+        . '| <a target="_blank" href="' . $url . '">Link</a>'
+        . '</div>';
+    $row['freq'] = $short_req . $full_req;
+
+    return $short_req . $full_req;
+}
+
+function printr($data, $eof = "\r\n", $sep = '   ', $lev = 0)
+{
+    $key = '%s: ';
+    $val = '<b>%s</b> ';
+    $out = '';
+    if (is_array($data)) {
+        foreach ($data as $k => $v) {
+            $k = trim($k);
+            if (is_array($v)) {
+                $out .= $eof . str_repeat($sep, $lev)
+                    . sprintf($key, $k)
+                    . printr($v, $eof, $sep, $lev + 1);
+            } else {
+                $v = trim($v);
+                $out .= $eof . str_repeat($sep, $lev)
+                    . sprintf($key, $k)
+                    . sprintf($val, wordwrap($v, 50, $eof . str_repeat(' ', strlen(sprintf($key, $k))), 1));
+            }
+        }
+    } else {
+        $out .= $eof . str_repeat($sep, $lev) . $data;
+    }
+    return $out;
+}
+

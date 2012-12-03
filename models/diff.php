@@ -18,9 +18,11 @@ class ModelDiff
         foreach ($targetHash as $key => $element) {
             $diff[$key] = array();
             $diff[$key]['added'] = !isset($sourceHash[$key]);
+            $diff[$key]['req']=$element['req'];
         }
         foreach ($sourceHash as $key => $element) {
             $diff[$key]['removed'] = !isset($targetHash[$key]);
+            $diff[$key]['req']=$element['req'];
         }
         foreach ($diff as $key => $element) {
             if (empty($element['removed']) && empty($element['added'])) {

@@ -9,7 +9,7 @@ $diff = array(
 );
 foreach ($this->diffSummary['functions'] as $func => $data) {
     $diff[$func . ' <span class="diff_func_type_marker" title="Number of calls">CT</span>'] = $data['ct'];
-    //$diff[$func.' <span class="diff_func_type_marker" title="Wall time">WT</span>']=$data['wt'];
+    $diff[$func.' <span class="diff_func_type_marker" title="Wall time">WT</span>']=$data['wt'];
 }
 
 
