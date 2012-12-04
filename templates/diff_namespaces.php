@@ -140,7 +140,13 @@ $this->includeFragment('diff_diagram')
 
 <div style="padding:20px 6px;">
     <?
-    $link = $this->link($requestForm);
+    $link = $this->link(
+        array(
+            'controller'=>'diff',
+            'action'=>'view_cached',
+            'file'=>$this->cacheFile,
+        )
+    );
     ?>
     Direct link on this page: <a href="<?=$link?>"><?=$link?></a>
 </div>

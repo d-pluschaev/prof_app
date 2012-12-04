@@ -52,9 +52,31 @@ class ControllerDiff extends ControllerDefault
             $tpl->functions = $functions;
             $tpl->diffSummary = $diffSummary;
 
-            return $tpl;
+            // render to buffer, save to file and write to output
+            $cacheFile = "{$namespaceSource}_vs_{$namespaceTarget}.html";
+            $tpl->cacheFile = $cacheFile;
+            ob_start();
+            echo $tpl->render();
+            $contents = ob_get_clean();
+            file_put_contents(App::cfg('path_diff_cache') . $cacheFile, $contents);
+
+            return $contents;
         } else {
             $this->addMessage('error', 'Invalid request');
+        }
+        App::forwardSafe(null, 'default');
+    }
+
+    public function actionViewCached()
+    {
+        $cacheFile = App::filterText(Request::get('file'), '_.');
+        $cacheFilePath = App::cfg('path_diff_cache').$cacheFile;
+
+        if(is_file($cacheFilePath)){
+            readfile($cacheFilePath);
+            exit;
+        }else{
+            $this->addMessage('error', 'Cached file not found');
         }
         App::forwardSafe(null, 'default');
     }

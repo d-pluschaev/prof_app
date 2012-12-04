@@ -37,6 +37,7 @@ $config = array(
 
     'path_request_logs' => "{$root}data/request_logs/",
     'path_request_results' => "{$root}data/request_results/",
+    'path_diff_cache' => "{$root}data/diff_cache/",
     'path_dynamic_config' => "{$root}config_dynamic.srz",
 
     'path_sc_auto_prepend_file' => "{$root}data/maintain_agent_files/auto_prepend.php",
