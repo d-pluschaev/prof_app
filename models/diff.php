@@ -80,6 +80,7 @@ class ModelDiff
                 's' => (float)$source['html_footer_time'],
                 'd' => (float)$source['html_footer_time'] - (float)$target['html_footer_time'],
             ),
+            'target_has_html_footer_time' => (bool)strlen($target['html_footer_time']),
             'http_code_changed' => $target['http_code'] !== $source['http_code'],
             'html_footer_time_changed' => (bool)strlen($target['html_footer_time'])
                 !== (bool)strlen($source['html_footer_time']),
@@ -95,12 +96,21 @@ class ModelDiff
             'added' => 0,
             'time' => array(),
             'html_footer_time' => array(),
+            'http_code_changed' => 0,
+            'html_footer_time_changed' => 0,
+            'pages_with_html_footer_time' => 0,
             'functions' => array(),
         );
         foreach ($diff as $element) {
             $summary['total']++;
             $summary['removed'] += isset($element['removed']) ? (int)$element['removed'] : 0;
             $summary['added'] += isset($element['added']) ? (int)$element['added'] : 0;
+
+            if (isset($element['data'])) {
+                $summary['http_code_changed'] += (int)$element['data']['http_code_changed'];
+                $summary['html_footer_time_changed'] += (int)$element['data']['html_footer_time_changed'];
+                $summary['pages_with_html_footer_time'] += (int)$element['data']['target_has_html_footer_time'];
+            }
 
             foreach (array(
                          'time',
