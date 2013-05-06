@@ -1,5 +1,7 @@
 <?php
 
+require 'logentry.php';
+
 class ModelResultsCollector
 {
     protected $sourceNamespace;
@@ -10,11 +12,11 @@ class ModelResultsCollector
     protected $logs;
     protected $progress_callback;
 
-    public function prepare($sourceNamespace, $targetNamespace, $testMode, $testCount)
+    public function prepare($sourceNamespace, $targetNamespace = null, $testMode = true, $testCount = 0)
     {
         $this->sourceNamespace = $sourceNamespace;
         $this->logDirectory = App::cfg('path_request_logs') . $sourceNamespace;
-        $this->resultDirectory = App::cfg('path_request_results') . $targetNamespace;
+        $this->resultDirectory = is_null($targetNamespace) ? null : App::cfg('path_request_results') . $targetNamespace;
         $this->testMode = $testMode && $testCount ? $testCount : 0;
     }
 
@@ -31,12 +33,14 @@ class ModelResultsCollector
 
         foreach ($this->logs as $index => $log) {
             $log = $this->prepareRequestData($log);
-            $this->processRequest($log);
+            $responseData = $this->processRequest($log);
             $this->progress(
                 array(
                     'step_name' => 'process requests',
                     'description' => 'send request ' . ($index + 1) . '/' . sizeof($this->logs),
                     'step' => floor((($index + 1) / sizeof($this->logs)) * (100 - $step)) + ($step - 1),
+                    'log' => $log,
+                    'response' => $responseData,
                 )
             );
             if ($this->testMode && $index >= $this->testMode - 1) {
@@ -45,6 +49,8 @@ class ModelResultsCollector
                         'step_name' => 'finish',
                         'description' => 'Iteration limit was reached (' . $this->testMode . '), exit',
                         'step' => 100,
+                        'log' => $log,
+                        'response' => $responseData,
                     )
                 );
                 return;
@@ -73,6 +79,7 @@ class ModelResultsCollector
     {
         $respData = $this->performHTTPRequest($logData);
         $this->saveResponse($logData, $respData);
+        return $respData;
     }
 
     protected function saveResponse(array $logData, array $responseData)
@@ -98,16 +105,46 @@ class ModelResultsCollector
         return glob($this->logDirectory . '/*.log');
     }
 
-    protected function getLogs()
+    public function getLogs()
     {
         $out = array();
         $files = $this->getLogFilesList();
         foreach ($files as $file) {
             $buf = (array)@unserialize(file_get_contents($file));
-            $buf['file'] = $file;
+            $buf['file'] = realpath($file);
+            $buf['base_name'] = basename($buf['file']);
             $out[] = $buf;
         }
+        
+        $this->sortLogs($out);
+        
         return $out;
+    }
+    
+    protected function sortLogs(array &$logs)
+    {
+        usort($logs, array($this, 'sortLogsComparator'));
+    }
+    
+    protected function sortLogsComparator(&$a, &$b)
+    {
+        return $a['order'] > $b['order'];
+    }
+    
+    public function deleteLogEntry($log)
+    {
+        $fileName= $this->logDirectory . '/' . $log;
+        return file_exists($fileName) && unlink($fileName);
+    }
+    
+    public function getLogDirectory()
+    {
+        return $this->logDirectory;
+    }
+    
+    public function getLogEntry($logName)
+    {
+        return new ModelLogEntry($logName, $this);
     }
 
     protected function performHTTPRequest(array $req_data)
@@ -131,6 +168,9 @@ class ModelResultsCollector
         curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        if (isset($req_data['request_headers']['Referer'])) {
+            curl_setopt($ch, CURLOPT_REFERER, $req_data['request_headers']['Referer']);
+        }
 
         // headers
         // remove session
@@ -182,6 +222,8 @@ class ModelResultsCollector
             'step' => null,
             'max_steps' => null,
             'description' => null,
+            'log' => null,
+            'response' => null,
         );
         foreach ($progress as $k => $v) {
             if (isset($data[$k])) {
