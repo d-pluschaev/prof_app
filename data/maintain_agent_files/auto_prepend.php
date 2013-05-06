@@ -14,7 +14,9 @@ if (!empty($config)) {
         $GLOBALS['debug_agent_result_file'] = "{$config['recording_directory']}/$uid.log";
 
         // save primary data
-        @file_put_contents($GLOBALS['debug_agent_result_file'], serialize(profilerAgentGetRequestData()));
+        $profilerAgentGetRequestData = profilerAgentGetRequestData();
+        $profilerAgentGetRequestData['order'] = $uid;
+        @file_put_contents($GLOBALS['debug_agent_result_file'], serialize($profilerAgentGetRequestData));
 
         register_shutdown_function('profilerAgentShutdownHandlerForRecordingMode');
 
