@@ -669,3 +669,7 @@ span.required {
 }
 
 /* END Diff diagram */
+
+.ui-widget {
+    font-size: 0.8em;
+}

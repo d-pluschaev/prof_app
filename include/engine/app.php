@@ -162,6 +162,40 @@ class App
         return '' . implode('&', $query);
     }
 
+    /**
+     * Sends redirect header to the agent. 
+     * Redirect URI is creating based on the $params.
+     * 
+     * @param array $params
+     */
+    public static function redirect(array $params)
+    {
+        header('Location: '.self::link($params));
+        exit;
+    }
+
+    /**
+     * Assembles a URI based on the params.
+     * 
+     * First param in array should be a controller name, second - an action name. 
+     * Further params will be treated as GET params and should contain key-value pairs.
+     *  
+     * @param array $params
+     * @return string
+     */
+    public static function link(array $params = array())
+    {
+        $query = array();
+        $c = 0;
+        foreach ($params as $k => $v) {
+            $query[] = ($c > 1 ? "$k=" : '') . urlencode($v);
+            $c++;
+        }
+        return 'http://' . $_SERVER['HTTP_HOST']
+            . ($_SERVER['SCRIPT_NAME']{0} != '/' ? '/' : '')
+            . $_SERVER['SCRIPT_NAME'] . '?' . implode('&', $query);
+    }
+
     public function processException(Exception $e)
     {
         echo $e->getMessage();

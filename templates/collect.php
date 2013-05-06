@@ -40,6 +40,7 @@ Issues which prevents launch: <?= implode(' and ', $problems) ?>
         <th>Description</th>
         <th>Log count</th>
         <th>Timestamp</th>
+        <th>Actions</th>
         </thead>
         <tbody>
 
@@ -59,6 +60,13 @@ Issues which prevents launch: <?= implode(' and ', $problems) ?>
             </td>
             <td width="130px">
                 <span><?=date('M d, Y H:i', $ns['data']['timestamp'])?></span>
+            </td>
+            <td width="10px">
+                <a href="<?=$this->link(array(
+                        'controller' => 'edit',
+                        'action' => 'default',
+                        'namespace' => $ns['name']
+                    )) ?>">Edit</a>
             </td>
         </tr>
             <? }?>

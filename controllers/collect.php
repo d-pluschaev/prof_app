@@ -116,7 +116,13 @@ class ControllerCollect extends ControllerDefault
 
     public function resultsCollectorProgressExtraOutput(array $data)
     {
-        echo "{$data['step_name']}: {$data['description']} [{$data['step']}%]<br/>";
+        if ($data['step'] == 5) {
+            echo "{$data['step_name']}: {$data['description']} [{$data['step']}%] \n";
+        } else {
+            $time = round($data['response']['time'] * 1000);
+            echo "[{$data['step']}%]	{$data['response']['http_code']}	{$time}	{$data['log']['name']}    \n";
+        }
+        
     }
 
     protected function applyDependencyErrorIfExists(array $dependencies)
