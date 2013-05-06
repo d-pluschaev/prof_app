@@ -59,17 +59,15 @@ class Template
         return htmlspecialchars($text);
     }
 
+    /**
+     * Returns URI created based on the $params.
+     * 
+     * @param array $params
+     * @return string
+     */
     public function link(array $params = array())
     {
-        $query = array();
-        $c = 0;
-        foreach ($params as $k => $v) {
-            $query[] = ($c > 1 ? "$k=" : '') . urlencode($v);
-            $c++;
-        }
-        return 'http://' . $_SERVER['HTTP_HOST']
-            . ($_SERVER['SCRIPT_NAME']{0} != '/' ? '/' : '')
-            . $_SERVER['SCRIPT_NAME'] . '?' . implode('&', $query);
+        return App::link($params);
     }
 
     public function getSort($default_col, $default_dir)
